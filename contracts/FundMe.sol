@@ -7,7 +7,7 @@ import "./PriceConverter.sol";
 error FundMe__NotOwner();
 
 /** @title A contract for crowd funding
- * @author Moses
+ * @author amv2
  * @notice This contract is to demo a sample funding contract
  * @dev This implements price feeds as our library
  */
@@ -16,15 +16,12 @@ contract FundMe {
 
     mapping(address => uint256) private s_addressToAmountFunded;
     address[] private s_funders;
-
-    // Could we make this constant?  /* hint: no! We should make it immutable! */
     address private immutable i_owner;
     uint256 public constant MINIMUM_USD = 50 * 10 ** 18;
 
     AggregatorV3Interface private s_priceFeed;
 
     modifier onlyOwner {
-        // require(msg.sender == owner);
         if (msg.sender != i_owner) revert FundMe__NotOwner();
         _;
     }
@@ -59,12 +56,6 @@ contract FundMe {
             s_addressToAmountFunded[funder] = 0;
         }
         s_funders = new address[](0);
-        // // transfer
-        // payable(msg.sender).transfer(address(this).balance);
-        // // send
-        // bool sendSuccess = payable(msg.sender).send(address(this).balance);
-        // require(sendSuccess, "Send failed");
-        // call
         (bool callSuccess, ) = payable(msg.sender).call{value: address(this).balance}("");
         require(callSuccess, "Call failed");
     }
